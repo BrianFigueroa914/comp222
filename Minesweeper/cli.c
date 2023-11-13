@@ -39,12 +39,12 @@ int processCommand(char tokens[][MAXTOKENLENGTH], int tokenCount);
 // ---------------------------------
 // input processing functions
 void runGame() {
-	char line[MAXLINELENGTH], lineCopy[100];
+	char line[MAXLINELENGTH], lineCopy[MAXLINELENGTH];
 	char tokens[MAXTOKENCOUNT][MAXTOKENLENGTH];
-
+	int tokenCount;
+	int result;
+	
 	while (1) {
-		int tokenCount;
-		int result;
 		printf(">> ");
 		getLine(line, MAXLINELENGTH);
 		getTokens(line, tokens, &tokenCount);
@@ -80,11 +80,7 @@ void getTokens(char line[], char tokens[][MAXTOKENLENGTH], int* count) {
 
 // ---------------------------------
 // command functions for “new” and “show”
-void commandNew(int r, int c, int m) {
-	rows = r;
-	cols = c;
-	mines = m;
-
+void commandNew() {
 	board = (cell**)malloc(sizeof(cell*) * rows);
 
 	//allocate new row vector
@@ -110,10 +106,21 @@ void displayCell(cell* c) {
 	printf(" %d", c->position);
 }
 int processCommand(char tokens[][MAXTOKENLENGTH], int tokenCount) {
-	if (token)
-	{
+	if (strcmp(tokens[0],"new") == 0) {
+		rows = atoi(tokens[1]);
+		cols = atoi(tokens[2]);
+		mines = atoi(tokens[3]);
 
+		commandNew(tokens[1], tokens[2],tokens[3]);
 	}
+	else if(strcmp(tokens[0], "show") == 0) {
+		commandShow();
+	}
+	else {
+		printf("Bye!\n");
+		break;
+	}
+	return 0;
 }
 // ---------------------------------
 
