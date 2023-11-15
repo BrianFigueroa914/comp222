@@ -44,7 +44,7 @@ void rungame() {
 	int result;
 
 	while (1) {
-		printf("\n>> ");
+		printf(">> ");
 		getLine(line, MAXSTRLENGTH);
 		getTokens(line, tokens, &count);
 
