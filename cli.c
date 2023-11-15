@@ -37,6 +37,8 @@ int colNeighbors[] = {0 , +1, +1, +1, +0, -1, -1, -1};
 void runGame();
 void getLine(char tempLine[], int maxLineLen);
 void getTokens(char tempLine[], char tempTokens[][MAXTOKENLENGTH], int* count);
+int getRandom(int range);
+void init_cell(cell *c, int p);
 void displayCell(cell* c);
 void commandNew();
 void commandShow();
@@ -81,10 +83,17 @@ void getTokens(char line[], char tokens[][MAXTOKENLENGTH], int* count) {
 int getRandom(int range){
 	return ((int)floor((float)range*rand()/RAND_MAX))%range;
 }
+void init_cell(cell *c, int p){
+	c->position = p;
+	c->mined = 0;
+	c->adjCount = 0;
+	c->covered = 0;
+	c->flagged = 0;
+}
 // command functions for “new” and “show”
 void displayCell(cell* c) {
 	if (c->mined == 1)
-		printf("%2s", "M");
+		printf("%2s", "*");
 	else if (c->adjCount == 0)
 		printf("%2s", "." );
 	else
@@ -100,7 +109,7 @@ void commandNew() {
 
 	for (int i = 0; i < rows; i++) {
 		for (int j = 0; j < cols; j++) {
-			board[i][j].position = i * cols + j;
+			init_cell(&board[i][j], board[i][j].position);
 		}
 	}
 
@@ -122,7 +131,6 @@ void commandNew() {
 		board[row1][col1].mined = board[row2][col2].mined;
 		board[row2][col2].mined = tempMined;
 	}
-
 	// adjCount calculation
 	for (int i = 0; i < rows; i++) {
 		for (int j = 0; j < cols; j++) {
