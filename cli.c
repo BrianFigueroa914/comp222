@@ -23,6 +23,9 @@ cell** board;
 int rows;
 int cols;
 int mines;
+int neighborCount = 8;
+int rowNeighbors[] = {-1 , -1, +0, +1, +1, +1, +0, -1};
+int colNeighbors[] = {0 , +1, +1, +1, +0, -1, -1, -1};
 
 // sizing constants ------
 #define MAXTOKENCOUNT 20	// max num of substr
@@ -80,11 +83,12 @@ int getRandom(int range){
 }
 // command functions for “new” and “show”
 void displayCell(cell* c) {
-	if (c->mined == 1) {
-		printf("%4s", "M");
-	}
+	if (c->mined == 1)
+		printf("%2s", "M");
+	else if (c->adjCount == 0)
+		printf("%2s", "." );
 	else
-		printf("%4d", c->position);
+		printf("%2d", c->adjCount);
 }
 void commandNew() {
 	board = (cell**)malloc(sizeof(cell*) * rows);
@@ -113,12 +117,27 @@ void commandNew() {
 		int col1 = getRandom(cols);
 		int col2 = getRandom(cols);
 
-		// Swap mined values between two random cells
+		// swap mined values between two random cells
 		int tempMined = board[row1][col1].mined;
 		board[row1][col1].mined = board[row2][col2].mined;
 		board[row2][col2].mined = tempMined;
 	}
 
+	// adjCount calculation
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < cols; j++) {
+			int mineCount = 0;
+			for (int d = 0; d < neighborCount; d++) {
+				int rN = i + rowNeighbors[d];
+				int cN = j + colNeighbors[d];
+				if (0 <= rN && rN < rows && 0 <= cN && cN < cols) {
+					if (board[rN][cN].mined == 1)
+						mineCount++;
+				}
+			}
+			board[i][j].adjCount = mineCount;
+		}
+	}
 }
 void commandShow() {
 	for (int i = 0; i < rows; i++) {
