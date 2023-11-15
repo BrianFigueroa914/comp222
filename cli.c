@@ -5,6 +5,8 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <math.h>
 
 // definition of “cell” struct
 struct cell {
@@ -74,7 +76,11 @@ void getTokens(char line[], char tokens[][MAXTOKENLENGTH], int* count) {
 }
 // command functions for “new” and “show”
 void displayCell(cell* c) {
-	printf("%4d", c->position);
+	if (c->mined == 1) {
+		printf("%4s", "M");
+	}
+	else
+		printf("%4d", c->position);
 }
 void commandNew() {
 	board = (cell**)malloc(sizeof(cell*) * rows);
@@ -89,6 +95,13 @@ void commandNew() {
 			board[i][j].position = i * cols + j;
 		}
 	}
+
+	for (int p = 0; p < mines; p++) {
+		int r = p/cols;
+		int c = p%cols;
+		board[r][c].mined = 1;
+	}
+
 }
 void commandShow() {
 	for (int i = 0; i < rows; i++) {
