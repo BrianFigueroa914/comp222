@@ -28,6 +28,7 @@ int mines;
 #define MAXTOKENCOUNT 20	// max num of substr
 #define MAXTOKENLENGTH 20	// substr length
 #define MAXSTRLENGTH 400	// max str length
+#define PERCENTAGEOFSHUFFLE 0.75
 
 // prototype functions ---
 void runGame();
@@ -74,6 +75,11 @@ void getTokens(char line[], char tokens[][MAXTOKENLENGTH], int* count) {
 	}
 	count = &tokenCount;
 }
+int getRandom(){
+	int lowest = 0; // lowest possible random number
+	int highest = rows * cols; 	//highest possible random number
+	return (rand() % (highest-lowest + 1)) + lowest;
+}
 // command functions for “new” and “show”
 void displayCell(cell* c) {
 	if (c->mined == 1) {
@@ -85,7 +91,7 @@ void displayCell(cell* c) {
 void commandNew() {
 	board = (cell**)malloc(sizeof(cell*) * rows);
 
-	//allocate new row vector
+	// allocate new row vector
 	for (int i = 0; i < rows; i++) {
 		board[i] = (cell*)malloc(sizeof(cell) * cols);
 	}
@@ -96,10 +102,18 @@ void commandNew() {
 		}
 	}
 
+	// initial placement of mines
 	for (int p = 0; p < mines; p++) {
 		int r = p/cols;
 		int c = p%cols;
 		board[r][c].mined = 1;
+	}
+
+	printf("Random number generated: %d\n", getRandom());
+
+	// shuffle placement of mines
+	for (int s = 1; s < rows * cols * PERCENTAGEOFSHUFFLE; s++) {
+
 	}
 
 }
