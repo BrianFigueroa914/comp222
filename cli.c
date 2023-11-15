@@ -75,11 +75,6 @@ void getTokens(char line[], char tokens[][MAXTOKENLENGTH], int* count) {
 	}
 	count = &tokenCount;
 }
-/*int getRandom(){
-	int lowest = 0; // lowest possible random number
-	int highest = rows * cols; 	//highest possible random number
-	return (rand() % (highest-lowest + 1)) + lowest;
-}*/
 int getRandom(int range){
 	return ((int)floor((float)range*rand()/RAND_MAX))%range;
 }
