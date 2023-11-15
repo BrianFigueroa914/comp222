@@ -40,61 +40,38 @@ void rungame() {
 	// Variables
 	char line[MAXSTRLENGTH];
 	char tokens[MAXTOKENCOUNT][MAXTOKENLENGTH];
-	char* subStr;
-	char lineCopy[MAXSTRLENGTH];
 	int count;
 	int result;
 
 	while (1) {
 		printf("\n>> ");
 		getLine(line, MAXSTRLENGTH);
-//		getTokens(line, tokens, count);
+		getTokens(line, tokens, &count);
 
-// get tokens function-----------------------------------------------------------
-		strcpy(lineCopy, line); // create copy of line into lineCopy
-
-		// break lineCopy into tokens based on space " " separator
-		subStr = strtok(lineCopy, " "); // initialize subStr to first token
-
-		count = 0; // initialize token count to 0
-		while (subStr != NULL) { // keep going until subStr is NULL
-		strcpy(tokens[count], subStr);
-		subStr = strtok(NULL, " "); // advance subStr to next token
-		count++;
-		}
-//-------------------------------------------------------------------------------
-	result = processCommand(tokens, count);
-	if (result == 0)
-		break;
+		result = processCommand(tokens, count);
+		if (result == 0)
+			break;
 	}
 }
-
 // helper functions
 void getLine(char tempLine[], int maxLineLen) {
 	fgets(tempLine, maxLineLen, stdin);
-	int lineLen = strlen(tempLine);
-	if (tempLine[lineLen - 1] == '\n')
-		tempLine[lineLen - 1] = '\0';
+	tempLine[strlen(tempLine) - 1] = '\0';
 }
-/* void getTokens(char line[], char tokens[][MAXTOKENLENGTH], int* count) {
+void getTokens(char line[], char tokens[][MAXTOKENLENGTH], int* count) {
 	char* subStr;
 	char lineCopy[MAXSTRLENGTH];
+	int tokenCount = 0; // initialize token count to 0
+	strcpy(lineCopy, line);
 
-	strcpy(lineCopy, line); // create copy of line into lineCopy
-
-	// break lineCopy into tokens based on space " " separator
-	subStr = strtok(lineCopy, " "); // initialize subStr to first token
-	count = 0; // initialize token count to 0
-
+	subStr = strtok(lineCopy, " "); // initialize subStr to first token based on space " " separator
 	while (subStr != NULL) { 			// keep going until subStr is NULL
-		strcpy(tokens[count], subStr); 		// copy latest token from subStr to tokens[] array
+		strcpy(tokens[tokenCount], subStr); 		// copy latest token from subStr to tokens[] array
+		tokenCount++;
 		subStr = strtok(NULL, " "); 		// advance subStr to next token
-		printf("Token %d is %s\n", count, subStr);
-		count++;
-
 	}
-}*/
-
+	count = &tokenCount;
+}
 // command functions for “new” and “show”
 void displayCell(cell* c) {
 	printf("%4d", c->position);
@@ -121,7 +98,6 @@ void commandShow() {
 		printf("\n");
 	}
 }
-
 // process command function
 int processCommand(char tokens[][MAXTOKENLENGTH], int tokenCount) {
 	if (strcmp(tokens[0],"new") == 0) {
@@ -131,7 +107,7 @@ int processCommand(char tokens[][MAXTOKENLENGTH], int tokenCount) {
 
 		commandNew();
 	}
-	else if(strcmp(tokens[0], "show") == 0) {
+	else if (strcmp(tokens[0], "show") == 0) {
 		commandShow();
 	}
 	else {
@@ -140,7 +116,6 @@ int processCommand(char tokens[][MAXTOKENLENGTH], int tokenCount) {
 	}
 	return 1;
 }
-
 
 int main (void) {
 	rungame();
