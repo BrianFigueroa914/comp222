@@ -42,6 +42,8 @@ void init_cell(cell *c, int p);
 void displayCell(cell* c);
 void commandNew();
 void commandShow();
+void commandFlag(int selectedRow, int selectedCol);
+//void commandUnflag(int tempRow, int tempCol);
 int processCommand(char tokens[][MAXTOKENLENGTH], int tokenCount);
 
 void rungame() {
@@ -90,12 +92,14 @@ void init_cell(cell *c, int p){
 	c->covered = 0;
 	c->flagged = 0;
 }
-// command functions for “new” and “show”
+// command functions for “new”, “show”, "flag", and "unflag"
 void displayCell(cell* c) {
 	if (c->mined == 1)
 		printf("%2s", "*");
 	else if (c->adjCount == 0)
 		printf("%2s", "." );
+	else if(c->flagged == 1)
+		printf("%2s", "|" );
 	else
 		printf("%2d", c->adjCount);
 }
@@ -155,6 +159,20 @@ void commandShow() {
 		printf("\n");
 	}
 }
+void commandFlag(int selectedRow, int selectedCol) {
+	if (board[selectedRow][selectedCol].flagged == 0)
+		board[selectedRow][selectedCol].flagged = 1;
+	else
+		printf("%s %d %s %d %s \n","Cell in row ", selectedRow, " column ", selectedCol, "is already flagged");
+
+}
+/*void commandUnflag(int tempRow, int tempCol) {
+	if (board[tempRow][tempCol].flagged == 1)
+		board[tempRow][tempCol].flagged = 0;
+	else
+		printf("%s%d%d\n","Cell in row ", tempRow, " column ", tempCol, "is already unflagged");
+}*/
+
 // process command function
 int processCommand(char tokens[][MAXTOKENLENGTH], int tokenCount) {
 	if (strcmp(tokens[0],"new") == 0) {
@@ -167,6 +185,12 @@ int processCommand(char tokens[][MAXTOKENLENGTH], int tokenCount) {
 	else if (strcmp(tokens[0], "show") == 0) {
 		commandShow();
 	}
+	else if (strcmp(tokens[0], "flag") == 0) {
+		commandFlag(atoi(tokens[1]), atoi(tokens[2]));
+	}
+/*	else if (strcmp(tokens[0], "unflag") == 0) {
+		commandUnflag(token[1], token[2]);
+	}*/
 	else {
 		printf("Bye!\n");
 		return 0;
