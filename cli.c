@@ -228,9 +228,6 @@ int processCommand(char tokens[][MAXTOKENLENGTH], int tokenCount) {
 	}
 	else if (strcmp(tokens[0], "flag") == 0) {
 		commandFlag(atoi(tokens[1])-1, atoi(tokens[2])-1);
-
-		//Checks if you won by flagging all mines
-		
 	}
 	else if (strcmp(tokens[0], "unflag") == 0) {
 		commandUnflag(atoi(tokens[1])-1, atoi(tokens[2])-1);
@@ -256,7 +253,16 @@ int processCommand(char tokens[][MAXTOKENLENGTH], int tokenCount) {
 		printf("Bye!\n");
 		return 0;
 	}
-	return 1;
+	//Checks if you won by flagging all mines
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < cols; j++) {
+			if ((board[i][j].mined == 1 && board[i][j].flagged == 0) || (board[i][j].mined == 0 && board[i][j].covered == 1)) {
+				return 1;
+			}
+		}
+	}
+	printf("%s \n", "Congratulations! You have won the game!");
+	return 0;
 }
 
 int main (void) {
