@@ -44,6 +44,8 @@ void commandNew();
 void commandShow();
 void commandFlag(int selectedRow, int selectedCol);
 void commandUnflag(int selectedRow, int selectedCol);
+void uncoverRecursive(int selectedRow, int selectedCol);
+void uncoverAll();
 void coverAll();
 int processCommand(char tokens[][MAXTOKENLENGTH], int tokenCount);
 
@@ -174,6 +176,31 @@ void commandUnflag(int selectedRow, int selectedCol) {
 	else
 		printf("%s %d %s %d %s \n","Cell in row ", selectedRow + 1, " column ", selectedCol + 1, "is already unflagged");
 }
+void uncoverRecursive(int selectedRow, int selectedCol) {
+	board[selectedRow][selectedCol].covered = 0;
+
+	if(board[selectedRow][selectedCol].adjCount == 0) {
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				for (int d = 0; d < neighborCount; d++) {
+					int rN = i + rowNeighbors[d];
+					int cN = j + colNeighbors[d];
+					if (0 <= rN && rN < rows && 0 <= cN && cN < cols && board[rN][cN].covered == 1) {
+						uncoverRecursive(rN,cN);
+					}
+				}
+			}
+		}
+	}
+
+}
+void uncoverAll() {
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < cols; j++) {
+			board[i][j].covered = 0;
+		}
+	}
+}
 void coverAll() {
 	for (int i = 0; i < rows; i++) {
 		for (int j = 0; j < cols; j++) {
@@ -199,6 +226,12 @@ int processCommand(char tokens[][MAXTOKENLENGTH], int tokenCount) {
 	}
 	else if (strcmp(tokens[0], "unflag") == 0) {
 		commandUnflag(atoi(tokens[1])-1, atoi(tokens[2])-1);
+	}
+	else if (strcmp(tokens[0], "uncover") == 0) {
+		uncoverRecursive(atoi(tokens[1])-1, atoi(tokens[2])-1);
+	}
+	else if (strcmp(tokens[0], "uncoverall") == 0) {
+		uncoverAll();
 	}
 	else if (strcmp(tokens[0], "coverall") == 0) {
 		coverAll();
