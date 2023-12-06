@@ -43,7 +43,7 @@ void displayCell(cell* c);
 void commandNew();
 void commandShow();
 void commandFlag(int selectedRow, int selectedCol);
-//void commandUnflag(int tempRow, int tempCol);
+//void commandUnflag(int selectedRow, int selectedCol);
 int processCommand(char tokens[][MAXTOKENLENGTH], int tokenCount);
 
 void rungame() {
@@ -99,7 +99,7 @@ void displayCell(cell* c) {
 	else if (c->adjCount == 0)
 		printf("%2s", "." );
 	else if(c->flagged == 1)
-		printf("%2s", "|" );
+		printf("%2s", "P" );
 	else
 		printf("%2d", c->adjCount);
 }
@@ -163,15 +163,14 @@ void commandFlag(int selectedRow, int selectedCol) {
 	if (board[selectedRow][selectedCol].flagged == 0)
 		board[selectedRow][selectedCol].flagged = 1;
 	else
-		printf("%s %d %s %d %s \n","Cell in row ", selectedRow, " column ", selectedCol, "is already flagged");
-
+		printf("%s %d %s %d %s \n","Cell in row ", selectedRow + 1, " column ", selectedCol + 1, "is already flagged");
 }
-/*void commandUnflag(int tempRow, int tempCol) {
-	if (board[tempRow][tempCol].flagged == 1)
-		board[tempRow][tempCol].flagged = 0;
+void commandUnflag(int selectedRow, int selectedCol) {
+	if (board[selectedRow][selectedCol].flagged == 1)
+		board[selectedRow][selectedCol].flagged = 0;
 	else
-		printf("%s%d%d\n","Cell in row ", tempRow, " column ", tempCol, "is already unflagged");
-}*/
+		printf("%s %d %s %d %s \n","Cell in row ", selectedRow + 1, " column ", selectedCol + 1, "is already unflagged");
+}
 
 // process command function
 int processCommand(char tokens[][MAXTOKENLENGTH], int tokenCount) {
@@ -186,11 +185,11 @@ int processCommand(char tokens[][MAXTOKENLENGTH], int tokenCount) {
 		commandShow();
 	}
 	else if (strcmp(tokens[0], "flag") == 0) {
-		commandFlag(atoi(tokens[1]), atoi(tokens[2]));
+		commandFlag(atoi(tokens[1])-1, atoi(tokens[2])-1);
 	}
-/*	else if (strcmp(tokens[0], "unflag") == 0) {
-		commandUnflag(token[1], token[2]);
-	}*/
+	else if (strcmp(tokens[0], "unflag") == 0) {
+		commandUnflag(atoi(tokens[1])-1, atoi(tokens[2])-1);
+	}
 	else {
 		printf("Bye!\n");
 		return 0;
