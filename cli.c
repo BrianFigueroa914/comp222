@@ -43,7 +43,8 @@ void displayCell(cell* c);
 void commandNew();
 void commandShow();
 void commandFlag(int selectedRow, int selectedCol);
-//void commandUnflag(int selectedRow, int selectedCol);
+void commandUnflag(int selectedRow, int selectedCol);
+void coverAll();
 int processCommand(char tokens[][MAXTOKENLENGTH], int tokenCount);
 
 void rungame() {
@@ -92,7 +93,6 @@ void init_cell(cell *c, int p){
 	c->covered = 0;
 	c->flagged = 0;
 }
-// command functions for “new”, “show”, "flag", and "unflag"
 void displayCell(cell* c) {
 	if (c->mined == 1)
 		printf("%2s", "*");
@@ -100,9 +100,12 @@ void displayCell(cell* c) {
 		printf("%2s", "." );
 	else if(c->flagged == 1)
 		printf("%2s", "P" );
+	else if (c->covered == 1)
+		printf("%2s", "/" );
 	else
 		printf("%2d", c->adjCount);
 }
+// command functions for “new”, “show”, "flag", "unflag" , "uncover", "uncoverAll", and "coverAll"
 void commandNew() {
 	board = (cell**)malloc(sizeof(cell*) * rows);
 
@@ -171,6 +174,13 @@ void commandUnflag(int selectedRow, int selectedCol) {
 	else
 		printf("%s %d %s %d %s \n","Cell in row ", selectedRow + 1, " column ", selectedCol + 1, "is already unflagged");
 }
+void coverAll() {
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < cols; j++) {
+			board[i][j].covered = 1;
+		}
+	}
+}
 
 // process command function
 int processCommand(char tokens[][MAXTOKENLENGTH], int tokenCount) {
@@ -189,6 +199,9 @@ int processCommand(char tokens[][MAXTOKENLENGTH], int tokenCount) {
 	}
 	else if (strcmp(tokens[0], "unflag") == 0) {
 		commandUnflag(atoi(tokens[1])-1, atoi(tokens[2])-1);
+	}
+	else if (strcmp(tokens[0], "coverall") == 0) {
+		coverAll();
 	}
 	else {
 		printf("Bye!\n");
