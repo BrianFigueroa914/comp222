@@ -44,6 +44,7 @@ void commandNew();
 void commandShow();
 void commandFlag(int selectedRow, int selectedCol);
 void commandUnflag(int selectedRow, int selectedCol);
+void uncover(int selectedRow, int selectedCol);
 void uncoverRecursive(int selectedRow, int selectedCol);
 void uncoverAll();
 void coverAll();
@@ -196,10 +197,7 @@ void uncoverRecursive(int selectedRow, int selectedCol) {
 							uncoverRecursive(rN,cN);
 					}
 			}
-
 		}
-
-
 }
 void uncoverAll() {
 	for (int i = 0; i < rows; i++) {
@@ -230,12 +228,23 @@ int processCommand(char tokens[][MAXTOKENLENGTH], int tokenCount) {
 	}
 	else if (strcmp(tokens[0], "flag") == 0) {
 		commandFlag(atoi(tokens[1])-1, atoi(tokens[2])-1);
+
+		//Checks if you won by flagging all mines
+		
 	}
 	else if (strcmp(tokens[0], "unflag") == 0) {
 		commandUnflag(atoi(tokens[1])-1, atoi(tokens[2])-1);
 	}
 	else if (strcmp(tokens[0], "uncover") == 0) {
 		uncoverRecursive(atoi(tokens[1])-1, atoi(tokens[2])-1);
+
+		// Checks if you uncovered a mine
+		if (board[atoi(tokens[1])-1][atoi(tokens[2])-1].mined == 1) {
+			printf("%s \n","You uncovered a mine and lost ");
+			return 0;
+		}
+		return 1;
+
 	}
 	else if (strcmp(tokens[0], "uncoverall") == 0) {
 		uncoverAll();
