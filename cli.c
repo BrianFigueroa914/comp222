@@ -96,16 +96,16 @@ void init_cell(cell *c, int p){
 	c->flagged = 0;
 }
 void displayCell(cell* c) {
-	if (c->mined == 1)
-		printf("%2s", "*");
-	else if (c->adjCount == 0)
-		printf("%2s", "." );
-	else if(c->flagged == 1)
+	if (c->flagged == 1)
 		printf("%2s", "P" );
 	else if (c->covered == 1)
 		printf("%2s", "/" );
-	else
+	else if (c->mined == 1)
+		printf("%2s", "*");
+	else if (c->adjCount > 0)
 		printf("%2d", c->adjCount);
+	else
+		printf("%2s", ".");
 }
 // command functions for “new”, “show”, "flag", "unflag" , "uncover", "uncoverAll", and "coverAll"
 void commandNew() {
@@ -176,22 +176,29 @@ void commandUnflag(int selectedRow, int selectedCol) {
 	else
 		printf("%s %d %s %d %s \n","Cell in row ", selectedRow + 1, " column ", selectedCol + 1, "is already unflagged");
 }
+void uncover(int selectedRow, int selectedCol) {
+	if (board[selectedRow][selectedCol].covered == 1) {
+		board[selectedRow][selectedCol].covered = 0;
+	}
+	else
+		printf("%s %d %s %d %s \n","Cell in row ", selectedRow + 1, " column ", selectedCol + 1, "is already uncovered");
+}
 void uncoverRecursive(int selectedRow, int selectedCol) {
-	board[selectedRow][selectedCol].covered = 0;
+	uncover(selectedRow, selectedCol);
 
 	if(board[selectedRow][selectedCol].adjCount == 0) {
-		for (int i = 0; i < rows; i++) {
-			for (int j = 0; j < cols; j++) {
+
 				for (int d = 0; d < neighborCount; d++) {
-					int rN = i + rowNeighbors[d];
-					int cN = j + colNeighbors[d];
-					if (0 <= rN && rN < rows && 0 <= cN && cN < cols && board[rN][cN].covered == 1) {
-						uncoverRecursive(rN,cN);
+					int rN = selectedRow + rowNeighbors[d];
+					int cN = selectedCol + colNeighbors[d];
+					if (0 <= rN && rN < rows && 0 <= cN && cN < cols) {
+						if (board[rN][cN].covered == 1)
+							uncoverRecursive(rN,cN);
 					}
-				}
 			}
+
 		}
-	}
+
 
 }
 void uncoverAll() {
