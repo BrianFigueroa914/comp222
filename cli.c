@@ -26,12 +26,14 @@ int mines;
 int neighborCount = 8;
 int rowNeighbors[] = {-1 , -1, +0, +1, +1, +1, +0, -1};
 int colNeighbors[] = {0 , +1, +1, +1, +0, -1, -1, -1};
+char *legalCommands[] ={ "new", "show", "quit", "flag", "unflag", "uncover", "uncoverall", "coverall"};
 
 // sizing constants ------
 #define MAXTOKENCOUNT 20	// max num of substr
 #define MAXTOKENLENGTH 20	// substr length
 #define MAXSTRLENGTH 400	// max str length
 #define PERCENTAGEOFSHUFFLE 1.25
+#define LEGALCMDCOUNT 8
 
 // prototype functions ---
 void runGame();
@@ -65,7 +67,7 @@ void rungame() {
 		result = processCommand(tokens, count);
 		if (result == 0)
 			break;
-	}
+		}
 }
 // helper functions
 void getLine(char tempLine[], int maxLineLen) {
@@ -188,16 +190,15 @@ void uncoverRecursive(int selectedRow, int selectedCol) {
 	uncover(selectedRow, selectedCol);
 
 	if(board[selectedRow][selectedCol].adjCount == 0) {
-
-				for (int d = 0; d < neighborCount; d++) {
-					int rN = selectedRow + rowNeighbors[d];
-					int cN = selectedCol + colNeighbors[d];
-					if (0 <= rN && rN < rows && 0 <= cN && cN < cols) {
-						if (board[rN][cN].covered == 1)
-							uncoverRecursive(rN,cN);
-					}
+		for (int d = 0; d < neighborCount; d++) {
+			int rN = selectedRow + rowNeighbors[d];
+			int cN = selectedCol + colNeighbors[d];
+			if (0 <= rN && rN < rows && 0 <= cN && cN < cols) {
+				if (board[rN][cN].covered == 1)
+					uncoverRecursive(rN,cN);
 			}
 		}
+	}
 }
 void uncoverAll() {
 	for (int i = 0; i < rows; i++) {
@@ -213,56 +214,74 @@ void coverAll() {
 		}
 	}
 }
-
 // process command function
 int processCommand(char tokens[][MAXTOKENLENGTH], int tokenCount) {
-	if (strcmp(tokens[0],"new") == 0) {
-		rows = atoi(tokens[1]);
-		cols = atoi(tokens[2]);
-		mines = atoi(tokens[3]);
+	//Checks input
+	int cmdLegal = 0;
+	for(int i = 0 ; i < LEGALCMDCOUNT; i++){
+		if (strcmp(tokens[0],legalCommands[i]) == 0) {
+			cmdLegal = 1;
+			break;
+		}
+	}
+//If command is legal continue process, else exit return to grab input
+	if (cmdLegal == 1) {
 
-		commandNew();
-	}
-	else if (strcmp(tokens[0], "show") == 0) {
-		commandShow();
-	}
-	else if (strcmp(tokens[0], "flag") == 0) {
-		commandFlag(atoi(tokens[1])-1, atoi(tokens[2])-1);
-	}
-	else if (strcmp(tokens[0], "unflag") == 0) {
-		commandUnflag(atoi(tokens[1])-1, atoi(tokens[2])-1);
-	}
-	else if (strcmp(tokens[0], "uncover") == 0) {
-		uncoverRecursive(atoi(tokens[1])-1, atoi(tokens[2])-1);
+		if (strcmp(tokens[0],"new") == 0) {
+			rows = atoi(tokens[1]);
+			cols = atoi(tokens[2]);
+			mines = atoi(tokens[3]);
 
-		// Checks if you uncovered a mine
-		if (board[atoi(tokens[1])-1][atoi(tokens[2])-1].mined == 1) {
-			printf("%s \n","You uncovered a mine and lost ");
+			commandNew();
+		}
+		else if (strcmp(tokens[0], "show") == 0) {
+			commandShow();
+		}
+		else if (strcmp(tokens[0], "flag") == 0) {
+			commandFlag(atoi(tokens[1])-1, atoi(tokens[2])-1);
+		}
+		else if (strcmp(tokens[0], "unflag") == 0) {
+			commandUnflag(atoi(tokens[1])-1, atoi(tokens[2])-1);
+		}
+		else if (strcmp(tokens[0], "uncover") == 0) {
+			uncoverRecursive(atoi(tokens[1])-1, atoi(tokens[2])-1);
+
+			// Checks if you uncovered a mine
+			if (board[atoi(tokens[1])-1][atoi(tokens[2])-1].mined == 1) {
+				printf("%s \n","You uncovered a mine and lost ");
+				return 0;
+			}
+			return 1;
+		}
+		else if (strcmp(tokens[0], "uncoverall") == 0) {
+			uncoverAll();
+		}
+		else if (strcmp(tokens[0], "coverall") == 0) {
+			coverAll();
+		}
+		else {
+			printf("Bye!\n");
 			return 0;
 		}
-		return 1;
 
-	}
-	else if (strcmp(tokens[0], "uncoverall") == 0) {
-		uncoverAll();
-	}
-	else if (strcmp(tokens[0], "coverall") == 0) {
-		coverAll();
-	}
-	else {
-		printf("Bye!\n");
-		return 0;
-	}
-	//Checks if you won by flagging all mines
-	for (int i = 0; i < rows; i++) {
-		for (int j = 0; j < cols; j++) {
-			if ((board[i][j].mined == 1 && board[i][j].flagged == 0) || (board[i][j].mined == 0 && board[i][j].covered == 1)) {
-				return 1;
+		//Checks if you won by flagging all mines
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				if ((board[i][j].mined == 1 && board[i][j].flagged == 0) || (board[i][j].mined == 0 && board[i][j].covered == 1)) {
+					return 1;
+				}
 			}
 		}
+		printf("%s \n", "Congratulations! You have won the game!");
+		return 0;
 	}
-	printf("%s \n", "Congratulations! You have won the game!");
-	return 0;
+	else {
+		printf("%s %s", tokens[0], "is not a legal command please try again. The acceptable commands are: \n");
+		for(int i = 0 ; i < LEGALCMDCOUNT; i++){
+					printf("%s%s%s", "\"", legalCommands[i], "\"\n");
+		}
+		return 1;
+	}
 }
 
 int main (void) {
