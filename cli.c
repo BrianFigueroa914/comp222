@@ -27,7 +27,6 @@ int neighborCount = 8;
 int rowNeighbors[] = {-1 , -1, +0, +1, +1, +1, +0, -1};
 int colNeighbors[] = {0 , +1, +1, +1, +0, -1, -1, -1};
 char *legalCommands[] = { "new", "show", "quit", "flag", "unflag", "uncover", "uncoverall", "coverall"};
-int legalCommandArgs [] = {3, 0, 0, 2, 2, 2, 0, 0};
 
 // sizing constants ------
 #define MAXTOKENCOUNT 20	// max num of substr
@@ -220,8 +219,8 @@ int processCommand(char tokens[][MAXTOKENLENGTH], int tokenCount) {
 	//Checks input
 	int cmdLegal = 0;
 	for(int i = 0 ; i < LEGALCMDCOUNT; i++){
-		if (strcmp(tokens[0],legalCommands[i]) == 0 && tokenCount - 1 == legalCommandArgs[i]) {
-			cmdLegal = i;
+		if (strcmp(tokens[0],legalCommands[i]) == 0) {
+			cmdLegal = 1;
 			break;
 		}
 	}
